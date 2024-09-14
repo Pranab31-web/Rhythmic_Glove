@@ -1,0 +1,20 @@
+
+
+.shivam{
+border: 2px solid black;
+    height: 95vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+}
+
+.shivam_button{
+    margin: 10px;
+    padding: 12px;
+    width: 210px;
+    background-color: rgba(66, 153, 225);
+    color: white;
+    border-radius: 12px;
+}

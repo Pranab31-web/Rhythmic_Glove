@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <!-- <script src="static/socket.io/node_modules/socket.io-client/socket.io.js"></script> -->
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+        integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+        crossorigin="anonymous"></script>
+    <script>
+        var socket = io('http://localhost:3000');
+        console.log("connected")
+        console.log(socket)
+        socket.on("check", (data) => {
+            console.log("data")
+            console.log(data)
+        })
+
+
+    </script>
+
+    <!-- <link rel="stylesheet" href="/index.css"> -->
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            background-color: #333;
+            color: #e2b714;
+            /* overflow: hidden; */
+            font-size: 2rem;
+            font-family: sans-serif;
+        }
+
+        .container {
+            width: 100vw;
+            height: 50vh;
+            padding: 22px;
+        }
+
+        .box {
+            border: 2px solid;
+            height: 50vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            margin: 12px;
+            padding: 6px;
+            background: #444;
+            color: #e2b714;
+            font-family: cursive;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <p id="userEmail" style="display: none;"><%=userEmail  %></p>
+    <div class="container">
+    </div>
+
+    <div class="box">
+    </div>
+
+    <div class="box">
+        <button id="submit">Save</button>
+    </div>
+    <script>
+        let container = document.querySelector('.container')
+        let word = ""
+        let arr = new Array("abcde", "fghij", "klmno", "pqrst", "uvwxy", "z")
+        let box = document.querySelector('.box')
+        let thirdModeArray = new Array()
+        socket.on("secondMode", (data) => {
+            console.log("first Mode")
+            container.innerText = container.innerText + data
+            word = word + data
+        })
+
+        socket.on("firstMode_suggestion", (data) => {
+            let charArray = arr[data - 1]
+            let insert = ""
+            charArray.split("").forEach((element) => {
+                insert = insert + `        <button>${element}</button>`
+            })
+            box.innerHTML = insert
+        })
+
+        socket.on("secondMode_suggestion", (data) => {
+            fetch(`/suggestion/${data}`).then((res) => {
+                return res.json()
+            }).then((q) => {
+                console.log(q)
+                let sliceLength = 0
+                if (q.length >= 5) {
+                    sliceLength = 5
+                } else {
+                    sliceLength = q.length
+                }
+                let charArray = q.slice(0, sliceLength);
+                thirdModeArray = charArray
+                let insert = ""
+                charArray.forEach((element) => {
+                    insert = insert + `        <button>${element.word}</button>`
+                })
+                box.innerHTML = insert
+
+
+                // let charArray = arr[data-1]
+            })
+
+        })
+
+        socket.on("spaceMode", (data) => {
+            console.log("space Mode")
+            gap = " "
+            container.innerHTML = container.innerHTML + "&nbsp;"
+            word = ""
+        })
+
+
+        socket.on("thirdMode", (data) => {
+            console.log("third mode daa")
+            console.log(data)
+            let insertText = thirdModeArray[data - 1]['word']
+            let containerText = container.innerHTML
+            let slicedText = insertText.slice(word.length)
+
+            console.log(slicedText)
+            container.innerHTML = container.innerHTML + slicedText + "&nbsp;"
+            word = ""
+        })
+
+        let userEmail = document.querySelector("#userEmail")
+        let submitBtn = document.querySelector('#submit')
+        submitBtn.addEventListener('click', (event) => {
+            let ineer = document.querySelector('.container').innerText
+            fetch("/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"data":ineer,"email":userEmail.innerText})
+            }).then((err)=>{
+                if(err) throw err;
+                container.innerHTML = ""
+                alert("data saved")
+            })
+
+        })
+    </script>
+</body>

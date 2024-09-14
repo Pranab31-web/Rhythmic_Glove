@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+
+    <script>
+        // let a = "https://api.datamuse.com/words?sp=t??k"
+        let a = "https://api.datamuse.com/words"
+        let char = new Array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
+
+        let finalData = []
+        let l = char.length
+        let finalCharacterData = []
+
+        for (let i = 0; i < l; i++) {
+            finalCharacterData[char[i]] = new Array()
+        }
+
+        for (let i = 0; i < l; i++) {
+            for (let j = 0; j < l; j++) {
+                if (i != j) {
+                    let firstChar = char[i]
+                    let secondChar = char[j]
+
+                    for (let a = 1; a < 7; a++) {
+                        let times = String(a);
+                        let t = ""
+                        for (let k = 0; k < times; k++) {
+                            t = t + '?'
+                        }
+                        apicall = `${firstChar}${t}${secondChar}`
+                        finalData.push(apicall)
+                    }
+                }
+            }
+        }
+
+
+        for (let i = 0; i < finalData.length; i++) {
+            const string = finalData[i]
+            let url = `https://api.datamuse.com/words?sp=${string}`
+            console.log(url)
+            // fetch(``) // api for the get request
+            //     .then(response => response.json())
+            //     .then(data =>{
+
+            //     });
+
+        }
+
+        console.log(apicall)
+    </script>
+
+</body>
+
+</html>
